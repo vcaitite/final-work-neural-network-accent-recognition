@@ -45,7 +45,7 @@ for (index in 1:executions){
 }
 
 y <- rep(0, nrow(y_hat_test))
-for (index in 1:22) {
+for (index in 1:nrow(y_hat_test)) {
   if(sum(results[index,] == 1) > (executions/2)){
     y[index] <- 1
   }

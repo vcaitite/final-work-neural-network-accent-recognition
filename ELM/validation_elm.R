@@ -50,7 +50,6 @@ for (p in p){
     y_hat_test <- as.matrix(YELM(x_validation, Z, W, 1), nrow = length_validation, ncol = 1)
     accuracy_validation<-((sum(abs(y_hat_test + y_validation)))/2)/length_validation
     results[index] <- accuracy_validation
-    #
   }
   print(paste("Acuracia de teste para p = ", p, " é ", mean(results)))
 }

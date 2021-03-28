@@ -3,14 +3,15 @@ source("~/Documents/UFMG/9/Redes Neurais/exemplos/MLP_backpropagation_tanh_momen
 source("~/Documents/UFMG/9/Redes Neurais/exemplos/YMLP_tanh.R")
 source("~/Documents/UFMG/9/Redes Neurais/exemplos/escalonamento_matrix.R")
 library(caret)
+library(RSNNS)
 
 # Carregando base de dados:
 path <- file.path("~/Documents/UFMG/9/Redes Neurais/TP2/final-work-neural-network-accent-recognition/databases", "treino.csv")
 data_train <- read.csv(path)
 
-executions <- 1
+executions <- 3
 
-ps <- c(20) # número de neurônios
+ps <- c(35) # número de neurônios
 
 results <- matrix(rep(0, (executions*length(ps))), nrow = executions)
 for (index in 1:executions){
@@ -26,7 +27,7 @@ for (index in 1:executions){
   
   # Escalonando os valores dos atributos para que fiquem restritos entre 0 e 1
   x_all <- rbind(x_train, x_validation)
-  x_all <- staggeringMatrix(x_all, nrow(x_all), ncol(x_all))
+  x_all <- normalizeData(x_all, type = "norm")
   x_train <- x_all[1:nrow(x_train), ]
   x_validation <- x_all[(nrow(x_train)+1):(nrow(x_train)+nrow(x_validation)), ]
   
@@ -35,7 +36,7 @@ for (index in 1:executions){
   length_validation <- length(y_validation)
   for (p in ps){
     # Treinando modelo:
-    modMLP<-backpropagation(x_train, y_train, p, 0.1, 1, 0.1, 2000)
+    modMLP<-backpropagation(x_train, y_train, p, 1, 0.1, 0.1, 5000)
     
     # Calculando acurácia de treinamento
     y_hat_train <- as.matrix(YMLP(x_train, modMLP), nrow = length_train, ncol = 1)

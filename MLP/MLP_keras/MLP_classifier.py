@@ -4,15 +4,12 @@ from numpy import std
 from sklearn.model_selection import RepeatedKFold
 from keras.models import Sequential
 from keras.layers import Dense
-from tensorflow import keras
-from tensorflow.keras import layers
 from sklearn.metrics import accuracy_score
 import pandas as pd
 from keras.utils.vis_utils import plot_model
 from sklearn import preprocessing
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
-from sklearn import svm
+
+
 
 # get the dataset
 def get_dataset():
@@ -30,12 +27,10 @@ def get_dataset():
 def get_model(n_inputs, n_outputs):
     model = Sequential()
     #model.add(Dense(10, input_dim=n_inputs, kernel_initializer='uniform', activation='selu'))
-    model.add(Dense(12, input_dim=n_inputs, kernel_initializer='he_uniform', activation='tanh', use_bias=True))
+    model.add(Dense(35, input_dim=n_inputs, kernel_initializer='uniform', activation='tanh', use_bias=True))
     model.add(Dense(n_outputs, activation='tanh', use_bias=True))
-    opt = keras.optimizers.SGD(
-        learning_rate=0.01, momentum=0.05, nesterov=False, name="SGD")
-    #opt = keras.optimizers.Adam(learning_rate=0.01)
-    #model.compile(loss='categorical_crossentropy', optimizer=opt)
+    #opt = keras.optimizers.SGD(
+    #    learning_rate=0.01, momentum=0.05, nesterov=False, name="SGD")
     model.compile(loss='mean_squared_error', optimizer="Adam")
     plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
     return model
@@ -46,7 +41,7 @@ def evaluate_model(X, y):
     results = list()
     n_inputs, n_outputs = X.shape[1], y.shape[1]
     # define evaluation procedure
-    cv = RepeatedKFold(n_splits=5, n_repeats=3, random_state=1)
+    cv = RepeatedKFold(n_splits=10, n_repeats=1, random_state=1)
     # enumerate folds
     for train_ix, test_ix in cv.split(X):
         # prepare data
@@ -55,7 +50,7 @@ def evaluate_model(X, y):
         # define model
         model = get_model(n_inputs, n_outputs)
         # fit model
-        model.fit(X_train, y_train, verbose=0, epochs=1000)
+        history = model.fit(X_train, y_train, verbose=0, epochs=3000)
         # make a prediction on the test set
         yhat = model.predict(X_test)
         yt = (1 * (yhat >= 0) - 0.5) * 2
@@ -75,6 +70,3 @@ y = Y
 results = evaluate_model(x, y)
 # summarize performance
 print('Accuracy: %.3f (%.3f)' % (mean(results), std(results)))
-
-clf = svm.SVC()
-clf.fit(X, y)
